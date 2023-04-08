@@ -82,6 +82,6 @@ for algorithm in algorithms:
         print(f"{algorithm.__name__}: Not implemented for this problem")
 print("\n")
 
-print("Hill Climbing | Maze, Manhattan, Random Restarts")
+print("Hill Climbing | Maze, Missionaries & Cannibals, Random Restarts")
 result = hill_climbing.hill_climbing_search(problem=missionaries_and_cannibals_problem, heuristic=missionaries_and_cannibals_problem.trips_heuristic, random_restart=True, num_restarts=100, statistics=True)
 print(result)

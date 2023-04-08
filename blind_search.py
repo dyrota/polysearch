@@ -1,4 +1,5 @@
 from algorithms import (
+    branch_and_bound,
     breadth_first,
     depth_first,
     iterative_deepening,
@@ -35,6 +36,7 @@ n_queens_problem = NQueensProblem(number_of_queens)
 
 # Define a list of algorithms to run on each problem
 algorithms = [
+    branch_and_bound.branch_and_bound_search,
     breadth_first.breadth_first_search,
     depth_first.depth_first_search,
     iterative_deepening.iterative_deepening_search,
