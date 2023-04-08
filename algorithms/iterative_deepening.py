@@ -56,8 +56,6 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
         elapsed_time = time.time() - start_time
         if solution is not None:
             path_cost = sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
-        else:
-            path_cost = None
         if statistics:
             return solution, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost) if path_cost is not None else None}
         else:

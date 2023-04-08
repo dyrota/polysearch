@@ -45,6 +45,6 @@ def branch_and_bound_search(problem: StateSpaceProblem, statistics=False):
 
     elapsed_time = time.time() - start_time
     if statistics:
-        return best_solution, {'time': elapsed_time, 'inferences': inferences, 'cost': best_cost}
+        return best_solution, {'time': elapsed_time, 'inferences': inferences, 'cost': int(best_cost)}
     else:
         return best_solution
