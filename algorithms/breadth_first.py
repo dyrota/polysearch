@@ -2,7 +2,6 @@ from interfaces.state_space_problem import StateSpaceProblem
 from collections import deque
 import time
 
-
 def breadth_first_search(problem: StateSpaceProblem, statistics=False):
     """
     Breadth-first search algorithm.
@@ -23,10 +22,12 @@ def breadth_first_search(problem: StateSpaceProblem, statistics=False):
 
         if problem.goal_check(state):
             elapsed_time = time.time() - start_time
+            full_path = path + [state]
+            path_cost = sum(problem.cost(full_path[i], full_path[i + 1]) for i in range(len(full_path) - 1))
             if statistics:
-                return path + [state], {'time': elapsed_time, 'inferences': inferences}
+                return full_path, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
             else:
-                return path + [state]
+                return full_path
 
         if state in visited:
             continue

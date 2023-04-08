@@ -45,8 +45,9 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
             path.append(current_state)
 
         elapsed_time = time.time() - start_time
+        path_cost = sum(problem.cost(path[i], path[i + 1]) for i in range(len(path) - 1))
         if statistics:
-            return path, {'time': elapsed_time, 'inferences': inferences}
+            return path, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
         else:
             return path
 
@@ -56,14 +57,14 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
     if random_restart:
         for _ in range(num_restarts):
             solution, stats = hill_climbing()
-            cost = sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
+            cost = stats['cost'] if statistics else sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
             if cost < best_cost:
                 best_solution, best_cost = solution, cost
                 if statistics:
                     best_stats = stats
     else:
         best_solution, best_stats = hill_climbing()
-        best_cost = sum(problem.cost(best_solution[i], best_solution[i + 1]) for i in range(len(best_solution) - 1))
+        best_cost = best_stats['cost'] if statistics else sum(problem.cost(best_solution[i], best_solution[i + 1]) for i in range(len(best_solution) - 1))
 
     if statistics:
         return best_solution, best_stats
