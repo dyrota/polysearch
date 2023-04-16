@@ -1,5 +1,5 @@
 from interfaces.state_space_problem import StateSpaceProblem
-from data_structures import Stack
+# from collections import deque
 import time
 
 def depth_first_search(problem: StateSpaceProblem, statistics=False):
@@ -13,11 +13,10 @@ def depth_first_search(problem: StateSpaceProblem, statistics=False):
     """
     start_time = time.time()
     visited = set()
-    stack = Stack()
-    stack.push((problem.initial_state(), []))
+    stack = [(problem.initial_state(), [])]
     inferences = 0
 
-    while not stack.is_empty():
+    while stack:
         state, path = stack.pop()
         inferences += 1
 
@@ -38,7 +37,7 @@ def depth_first_search(problem: StateSpaceProblem, statistics=False):
         for operator in problem.operators():
             successor = problem.apply_operator(operator, state)
             if successor is not None and successor not in visited:
-                stack.push((successor, path + [state]))
+                stack.append((successor, path + [state]))
 
     if statistics:
         elapsed_time = time.time() - start_time
