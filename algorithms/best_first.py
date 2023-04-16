@@ -1,6 +1,6 @@
 from interfaces.state_space_problem import StateSpaceProblem
-import time
 import heapq
+import time
 
 def best_first_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
     """

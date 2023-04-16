@@ -1,6 +1,6 @@
 from interfaces.state_space_problem import StateSpaceProblem
-import time
 import heapq
+import time
 
 def branch_and_bound_search(problem: StateSpaceProblem, statistics=False):
     """

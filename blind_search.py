@@ -28,7 +28,7 @@ maze_data = [
 
 initial_state = (0, 0)
 goal_state = (7, 7)
-number_of_queens = 7
+number_of_queens = 8
 
 maze_problem = MazeProblem(maze_data, initial_state, goal_state)
 missionaries_and_cannibals_problem = MissionariesAndCannibalsProblem()
