@@ -1,5 +1,5 @@
 from interfaces.state_space_problem import StateSpaceProblem
-import heapq
+from data_structures import PriorityQueue
 import time
 
 def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
@@ -18,13 +18,13 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
 
     start_time = time.time()
     visited = set()
-    priority_queue = []
+    priority_queue = PriorityQueue()
     initial_state = problem.initial_state()
-    heapq.heappush(priority_queue, (heuristic(initial_state), 0, initial_state, []))
+    priority_queue.push((heuristic(initial_state), 0, initial_state, []))
     inferences = 0
 
-    while priority_queue:
-        heuristic_value, accumulated_cost, state, path = heapq.heappop(priority_queue)
+    while not priority_queue.is_empty():
+        heuristic_value, accumulated_cost, state, path = priority_queue.pop()
         path_cost = accumulated_cost + heuristic_value
         inferences += 1
 
@@ -47,11 +47,10 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
                 current_cost = problem.cost(state, successor)
                 new_accumulated_cost = accumulated_cost + current_cost
                 new_heuristic_value = heuristic(successor)
-                heapq.heappush(priority_queue, (new_heuristic_value, new_accumulated_cost, successor, path + [state]))
+                priority_queue.push((new_heuristic_value, new_accumulated_cost, successor, path + [state]))
 
     if statistics:
         elapsed_time = time.time() - start_time
         return None, {'time': elapsed_time, 'inferences': inferences}
     else:
         return None
-

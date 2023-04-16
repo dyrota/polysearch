@@ -1,5 +1,5 @@
 from interfaces.state_space_problem import StateSpaceProblem
-from collections import deque
+from data_structures import Queue
 import time
 
 def breadth_first_search(problem: StateSpaceProblem, statistics=False):
@@ -13,11 +13,12 @@ def breadth_first_search(problem: StateSpaceProblem, statistics=False):
     """
     start_time = time.time()
     visited = set()
-    queue = deque([(problem.initial_state(), [])])
+    queue = Queue()
+    queue.enqueue((problem.initial_state(), []))
     inferences = 0
 
-    while queue:
-        state, path = queue.popleft()
+    while not queue.is_empty():
+        state, path = queue.dequeue()
         inferences += 1
 
         if problem.goal_check(state):
@@ -37,7 +38,7 @@ def breadth_first_search(problem: StateSpaceProblem, statistics=False):
         for operator in problem.operators():
             successor = problem.apply_operator(operator, state)
             if successor is not None and successor not in visited:
-                queue.append((successor, path + [state]))
+                queue.enqueue((successor, path + [state]))
 
     if statistics:
         elapsed_time = time.time() - start_time

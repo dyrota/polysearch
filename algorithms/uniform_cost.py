@@ -1,15 +1,16 @@
 from interfaces.state_space_problem import StateSpaceProblem
-import heapq
+from data_structures import PriorityQueue
 import time
 
 def uniform_cost_search(problem: StateSpaceProblem, statistics=False):
     start_time = time.time()
     visited = set()
-    priority_queue = [(0, problem.initial_state(), [])]
+    priority_queue = PriorityQueue()
+    priority_queue.push((0, problem.initial_state(), []))
     inferences = 0
 
-    while priority_queue:
-        path_cost, state, path = heapq.heappop(priority_queue)
+    while not priority_queue.is_empty():
+        path_cost, state, path = priority_queue.pop()
         inferences += 1
 
         if problem.goal_check(state):
@@ -29,7 +30,7 @@ def uniform_cost_search(problem: StateSpaceProblem, statistics=False):
             successor = problem.apply_operator(operator, state)
             if successor is not None and successor not in visited:
                 cost = path_cost + problem.cost(state, successor)
-                heapq.heappush(priority_queue, (cost, successor, path + [state]))
+                priority_queue.push((cost, successor, path + [state]))
 
     if statistics:
         elapsed_time = time.time() - start_time
