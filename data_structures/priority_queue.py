@@ -8,7 +8,8 @@ class PriorityQueue:
         heapq.heappush(self.items, (priority, item))
 
     def pop(self):
-        return heapq.heappop(self.items)[1]
+        priority, item = heapq.heappop(self.items)
+        return priority, item
 
     def is_empty(self):
         return len(self.items) == 0
