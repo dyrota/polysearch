@@ -52,4 +52,4 @@ from state_space_search.problems.n_queens import NQueensProblem
 from your_problem import YourProblem
 
 problem = YourProblem()
-solution = a_star_search(problem, heuristic=my_heuristic_function)
+solution = a_star_search(problem, heuristic=your_heuristic_function)
