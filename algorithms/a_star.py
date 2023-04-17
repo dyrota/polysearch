@@ -1,5 +1,5 @@
 from interfaces.state_space_problem import StateSpaceProblem
-import heapq
+from data_structures.priority_queue import PriorityQueue
 import time
 
 def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
@@ -18,19 +18,20 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
 
     start_time = time.time()
     visited = set()
-    priority_queue = []
+    priority_queue = PriorityQueue()
     initial_state = problem.initial_state()
-    heapq.heappush(priority_queue, (heuristic(initial_state), 0, initial_state, []))
+    priority_queue.push((initial_state, []), heuristic(initial_state))
     inferences = 0
 
-    while priority_queue:
-        heuristic_value, accumulated_cost, state, path = heapq.heappop(priority_queue)
-        path_cost = accumulated_cost + heuristic_value
+    while not priority_queue.is_empty():
+        # _ = accumulatd_cost + heuristic value
+        _, (state, path) = priority_queue.pop()
         inferences += 1
 
         if problem.goal_check(state):
             elapsed_time = time.time() - start_time
             full_path = path + [state]
+            path_cost = sum(problem.cost(full_path[i], full_path[i + 1]) for i in range(len(full_path) - 1))
             if statistics:
                 return full_path, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
             else:
@@ -45,13 +46,12 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
             successor = problem.apply_operator(operator, state)
             if successor is not None and successor not in visited:
                 current_cost = problem.cost(state, successor)
-                new_accumulated_cost = accumulated_cost + current_cost
                 new_heuristic_value = heuristic(successor)
-                heapq.heappush(priority_queue, (new_heuristic_value, new_accumulated_cost, successor, path + [state]))
+                accumulated_cost = sum(problem.cost(path[i], path[i + 1]) for i in range(len(path) - 1)) + current_cost
+                priority_queue.push((successor, path + [state]), accumulated_cost + new_heuristic_value)
 
     if statistics:
         elapsed_time = time.time() - start_time
         return None, {'time': elapsed_time, 'inferences': inferences}
     else:
         return None
-

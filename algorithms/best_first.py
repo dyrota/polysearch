@@ -1,5 +1,5 @@
 from interfaces.state_space_problem import StateSpaceProblem
-import heapq
+from data_structures.priority_queue import PriorityQueue
 import time
 
 def best_first_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
@@ -18,13 +18,14 @@ def best_first_search(problem: StateSpaceProblem, heuristic=None, statistics=Fal
 
     start_time = time.time()
     visited = set()
-    priority_queue = []
+    priority_queue = PriorityQueue()
     initial_state = problem.initial_state()
-    heapq.heappush(priority_queue, (heuristic(initial_state), initial_state, []))
+    priority_queue.push((initial_state, []), heuristic(initial_state))
     inferences = 0
 
-    while priority_queue:
-        heuristic_value, state, path = heapq.heappop(priority_queue)
+    while not priority_queue.is_empty():
+        # _ = heuristic_value
+        _, (state, path) = priority_queue.pop()
         inferences += 1
 
         if problem.goal_check(state):
@@ -44,7 +45,7 @@ def best_first_search(problem: StateSpaceProblem, heuristic=None, statistics=Fal
         for operator in problem.operators():
             successor = problem.apply_operator(operator, state)
             if successor is not None and successor not in visited:
-                heapq.heappush(priority_queue, (heuristic(successor), successor, path + [state]))
+                priority_queue.push((successor, path + [state]), heuristic(successor))
 
     if statistics:
         elapsed_time = time.time() - start_time
