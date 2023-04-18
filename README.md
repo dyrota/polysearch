@@ -1,4 +1,4 @@
-# State Space Search Algorithm Library
+# Omnisearch
 
 This library provides a collection of state space search algorithms designed to solve problems defined by the `StateSpaceProblem` interface. The library includes both blind and informed search algorithms, making it versatile for various problem-solving scenarios.
 
@@ -32,21 +32,22 @@ To use the library, first, create a class for your problem that inherits from th
 
 After defining your problem, you can use any of the algorithms from the library by importing the desired algorithm and passing your problem instance to it. If needed, you can also provide a heuristic function for informed search algorithms like Best-First Search and A* Search.
 
+## Example
 ```python
 # algorithms
-from state_space_search.algorithms.a_star import a_star_search
-from state_space_search.algorithms.best_first import best_first_search
-from state_space_search.algorithms.branch_and_bound import branch_and_bound_search
-from state_space_search.algorithms.breadth_first import breadth_first_search
-from state_space_search.algorithms.depth_first import depth_first_search
-from state_space_search.algorithms.hill_climbing import hill_climbing_search
-from state_space_search.algorithms.iterative_deepening import iterative_deepening_search
-from state_space_search.algorithms.uniform_cost import uniform_cost_search
+from omnisearch.algorithms.a_star import a_star_search
+from omnisearch.algorithms.best_first import best_first_search
+from omnisearch.algorithms.branch_and_bound import branch_and_bound_search
+from omnisearch.algorithms.breadth_first import breadth_first_search
+from omnisearch.algorithms.depth_first import depth_first_search
+from omnisearch.algorithms.hill_climbing import hill_climbing_search
+from omnisearch.algorithms.iterative_deepening import iterative_deepening_search
+from omnisearch.algorithms.uniform_cost import uniform_cost_search
 
 # existing problems
-from state_space_search.problems.maze import MazeProblem
-from state_space_search.problems.missionaries_and_cannibals import MissionariesAndCannibalsProblem
-from state_space_search.problems.n_queens import NQueensProblem
+from omnisearch.problems.maze import MazeProblem
+from omnisearch.problems.missionaries_and_cannibals import MissionariesAndCannibalsProblem
+from omnisearch.problems.n_queens import NQueensProblem
 
 # example problem
 from your_problem import YourProblem
