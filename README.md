@@ -2,6 +2,20 @@
 
 This library provides a collection of state space search algorithms designed to solve problems defined by the `StateSpaceProblem` interface. The library includes both blind and informed search algorithms, making it versatile for various problem-solving scenarios.
 
+## Installation
+You can install this software using pip:
+```
+pip install -U omnisearch
+```
+You can install the latest version of the code directly from GitHub:
+```
+pip install -U git+https://github.com/chaseburton/omnisearch@main
+```
+
+## Important Links
+- Source code: https://github.com/chaseburton/omnisearch
+- Documentation: http://omnisearch.readthedocs.org
+
 ## Structure
 
 The library is structured as a package containing several search algorithms. Each algorithm utilizes a standard interface, allowing users to easily switch between algorithms when solving a problem. To demonstrate the usage of these algorithms, three example problems are provided, which can be run using `blind_search.py` and `informed_search.py`.
