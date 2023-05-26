@@ -1,20 +1,20 @@
-# Omnisearch
+# polysearch
 
 This library provides a collection of state space search algorithms designed to solve problems defined by the `StateSpaceProblem` interface. The library includes both blind and informed search algorithms, making it versatile for various problem-solving scenarios.
 
 ## Installation
 You can install this software using pip:
 ```
-pip install -U omnisearch
+pip install -U polysearch
 ```
 You can install the latest version of the code directly from GitHub:
 ```
-pip install -U git+https://github.com/chaseburton/omnisearch@main
+pip install -U git+https://github.com/chaseburton/polysearch@main
 ```
 
 ## Important Links
-- Source code: https://github.com/chaseburton/omnisearch
-- Documentation: http://omnisearch.readthedocs.org
+- Source code: https://github.com/chaseburton/polysearch
+- Documentation: http://polysearch.readthedocs.org
 
 ## Structure
 
@@ -49,19 +49,23 @@ After defining your problem, you can use any of the algorithms from the library 
 ## Example
 ```python
 # algorithms
-from omnisearch.algorithms.a_star import a_star_search
-from omnisearch.algorithms.best_first import best_first_search
-from omnisearch.algorithms.branch_and_bound import branch_and_bound_search
-from omnisearch.algorithms.breadth_first import breadth_first_search
-from omnisearch.algorithms.depth_first import depth_first_search
-from omnisearch.algorithms.hill_climbing import hill_climbing_search
-from omnisearch.algorithms.iterative_deepening import iterative_deepening_search
-from omnisearch.algorithms.uniform_cost import uniform_cost_search
+from polysearch.algorithms import *
+
+from polysearch.algorithms import a_star_search
+from polysearch.algorithms import best_first_search
+from polysearch.algorithms import branch_and_bound_search
+from polysearch.algorithms import breadth_first_search
+from polysearch.algorithms import depth_first_search
+from polysearch.algorithms import hill_climbing_search
+from polysearch.algorithms import iterative_deepening_search
+from polysearch.algorithms import uniform_cost_search
 
 # existing problems
-from omnisearch.problems.maze import MazeProblem
-from omnisearch.problems.missionaries_and_cannibals import MissionariesAndCannibalsProblem
-from omnisearch.problems.n_queens import NQueensProblem
+from polysearch.problems import *
+
+from polysearch.problems.maze import MazeProblem
+from polysearch.problems.missionaries_and_cannibals import MissionariesAndCannibalsProblem
+from polysearch.problems.n_queens import NQueensProblem
 
 # example problem
 from your_problem import YourProblem

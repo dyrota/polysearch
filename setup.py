@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name='omnisearch',
-    version='0.0.3',
+    name='polysearch',
+    version='0.0.1',
     description='A collection of state space search algorithms.',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Chase Burton Taylor',
     author_email='ctaylor@citycollege.sheffield.eu',
-    url='https://github.com/chaseburton/omnisearch',
+    url='https://github.com/chaseburton/polysearch',
     packages=find_packages(),
     install_requires=[
         # None since heapq, abc, and time are built-in modules.
