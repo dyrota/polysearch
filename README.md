@@ -1,4 +1,4 @@
-# polysearch
+# Polysearch
 
 This library provides a collection of state space search algorithms designed to solve problems defined by the `StateSpaceProblem` interface. The library includes both blind and informed search algorithms, making it versatile for various problem-solving scenarios.
 
