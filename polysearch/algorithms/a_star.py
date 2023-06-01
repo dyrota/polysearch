@@ -24,7 +24,7 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
     inferences = 0
 
     while not priority_queue.is_empty():
-        # _ = accumulatd_cost + heuristic value
+        # _ = accumulated_cost + heuristic value
         _, (state, path) = priority_queue.pop()
         inferences += 1
 

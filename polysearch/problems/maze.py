@@ -1,5 +1,5 @@
 from interfaces.state_space_problem import StateSpaceProblem
-import math # Needed for the Euclidean heuristic
+import math # Required for the Euclidean heuristic
 
 class MazeProblem(StateSpaceProblem):
     def __init__(self, maze, start, goal):
