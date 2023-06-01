@@ -1,4 +1,4 @@
-from interfaces.state_space_problem import StateSpaceProblem
+from ..interfaces.state_space_problem import StateSpaceProblem
 import math # Required for the Euclidean heuristic
 
 class MazeProblem(StateSpaceProblem):
@@ -24,8 +24,8 @@ class MazeProblem(StateSpaceProblem):
     def cost(self, state1, state2):
         return 1
 
-    def solution(self, state):
-        return state
+    # def solution(self, state):
+    #     return state
 
     def move_up(self, state):
         row, col = state

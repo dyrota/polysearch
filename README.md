@@ -42,7 +42,6 @@ To use the library, first, create a class for your problem that inherits from th
 - `operators()`: Returns the list of operators applicable to the problem.
 - `apply_operator(operator, state)`: Applies the given operator to the state and returns the resulting state.
 - `cost(state1, state2)`: Returns the cost of transitioning from state1 to state2.
-- `solution(state)`: Returns the solution for the problem given the goal state.
 
 After defining your problem, you can use any of the algorithms from the library by importing the desired algorithm and passing your problem instance to it. If needed, you can also provide a heuristic function for informed search algorithms like Best-First Search and A* Search.
 

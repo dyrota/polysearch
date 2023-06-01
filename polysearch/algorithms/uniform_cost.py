@@ -1,5 +1,5 @@
-from interfaces.state_space_problem import StateSpaceProblem
-from data_structures.priority_queue import PriorityQueue
+from ..interfaces.state_space_problem import StateSpaceProblem
+from ..data_structures.priority_queue import PriorityQueue
 import time
 
 def uniform_cost_search(problem: StateSpaceProblem, statistics=False):
@@ -26,7 +26,7 @@ def uniform_cost_search(problem: StateSpaceProblem, statistics=False):
             elapsed_time = time.time() - start_time
             full_path = path + [state]
             if statistics:
-                return full_path, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
+                return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
             else:
                 return full_path
 
@@ -43,6 +43,6 @@ def uniform_cost_search(problem: StateSpaceProblem, statistics=False):
 
     if statistics:
         elapsed_time = time.time() - start_time
-        return None, {'time': elapsed_time, 'inferences': inferences}
+        return None, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences}
     else:
         return None

@@ -1,4 +1,4 @@
-from interfaces.state_space_problem import StateSpaceProblem
+from ..interfaces.state_space_problem import StateSpaceProblem
 
 class NQueensProblem(StateSpaceProblem):
     def __init__(self, n):
@@ -28,9 +28,6 @@ class NQueensProblem(StateSpaceProblem):
 
     def cost(self, state1, state2):
         return 1
-
-    def solution(self, state):
-        return state
 
     def place_queen_in_row(self, row):
         def operator(state):

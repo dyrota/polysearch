@@ -1,10 +1,12 @@
-from polysearch.algorithms import (
-    branch_and_bound,
-    breadth_first,
-    depth_first,
-    iterative_deepening,
-    uniform_cost
-)
+# from polysearch.algorithms import (
+#     # branch_and_bound,
+#     # breadth_first,
+#     depth_first,
+#     # iterative_deepening,
+#     # uniform_cost
+# )
+
+# from .polysearch.algorithms.best_first import best_first_search
 
 from polysearch.problems import (
     MazeProblem,
@@ -12,7 +14,10 @@ from polysearch.problems import (
     NQueensProblem
 )
 
-from polysearch.interfaces.state_space_problem import StateSpaceProblem
+# from .polysearch.interfaces.state_space_problem import StateSpaceProblem
+
+# from polysearch.problems.maze import MazeProblem
+from polysearch.algorithms.depth_first import depth_first_search
 
 # Initialize the example problems
 maze_data = [
@@ -36,11 +41,11 @@ n_queens_problem = NQueensProblem(number_of_queens)
 
 # Define a list of algorithms to run on each problem
 algorithms = [
-    branch_and_bound.branch_and_bound_search,
-    breadth_first.breadth_first_search,
-    depth_first.depth_first_search,
-    iterative_deepening.iterative_deepening_search,
-    uniform_cost.uniform_cost_search
+    # branch_and_bound.branch_and_bound_search,
+    # breadth_first.breadth_first_search,
+    depth_first_search,
+    # iterative_deepening.iterative_deepening_search,
+    # uniform_cost.uniform_cost_search
 ]
 
 # Define a list of example problems
@@ -50,12 +55,16 @@ problems = [
     ("N-Queens", n_queens_problem)
 ]
 
+# result = depth_first.depth_first_search(maze_problem, statistics=True)
+# for _ in result:
+#     print(_)
+
 # Run each algorithm on each problem (without using any heuristics) and display the results and statisitcs
 for problem_name, problem in problems:
     print(f"Running algorithms on {problem_name} problem:")
     for algorithm in algorithms:
         try:
-            result = algorithm(problem, statistics=False)
+            result = algorithm(problem, statistics=True)
             print(f"{algorithm.__name__}: {result}")
         except NotImplementedError:
             print(f"{algorithm.__name__}: Not implemented for this problem")

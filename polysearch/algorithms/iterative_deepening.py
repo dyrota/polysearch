@@ -1,4 +1,4 @@
-from interfaces.state_space_problem import StateSpaceProblem
+from ..interfaces.state_space_problem import StateSpaceProblem
 import time
 
 def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, statistics=False):
@@ -44,9 +44,9 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
 
             if solution is not None:
                 elapsed_time = time.time() - start_time
-                path_cost = sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
                 if statistics:
-                    return solution, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
+                    path_cost = sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
+                    return {'path': solution}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
                 else:
                     return solution
 
@@ -55,8 +55,10 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
         solution, _ = depth_limited_search(problem.initial_state(), max_depth, [], set())
         elapsed_time = time.time() - start_time
         if solution is not None:
-            path_cost = sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
-        if statistics:
-            return solution, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost) if path_cost is not None else None}
+            if statistics:
+                path_cost = sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
+                return {'path': solution}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
+            else:
+                return solution
         else:
-            return solution
+            return None

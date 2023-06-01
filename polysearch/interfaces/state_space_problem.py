@@ -52,13 +52,3 @@ class StateSpaceProblem(ABC):
         :return: The cost of the transition.
         """
         pass
-
-    @abstractmethod
-    def solution(self, state):
-        """
-        Returns the solution for the problem given the goal state.
-
-        :param state: The goal state.
-        :return: The solution for the problem.
-        """
-        pass

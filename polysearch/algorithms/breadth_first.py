@@ -1,5 +1,5 @@
-from interfaces.state_space_problem import StateSpaceProblem
-from data_structures.queue import Queue
+from ..interfaces.state_space_problem import StateSpaceProblem
+from ..data_structures.queue import Queue
 import time
 
 def breadth_first_search(problem: StateSpaceProblem, statistics=False):
@@ -26,7 +26,7 @@ def breadth_first_search(problem: StateSpaceProblem, statistics=False):
             full_path = path + [state]
             path_cost = sum(problem.cost(full_path[i], full_path[i + 1]) for i in range(len(full_path) - 1))
             if statistics:
-                return full_path, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
+                return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
             else:
                 return full_path
 
@@ -42,6 +42,6 @@ def breadth_first_search(problem: StateSpaceProblem, statistics=False):
 
     if statistics:
         elapsed_time = time.time() - start_time
-        return None, {'time': elapsed_time, 'inferences': inferences}
+        return {'path': None}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences}
     else:
         return None

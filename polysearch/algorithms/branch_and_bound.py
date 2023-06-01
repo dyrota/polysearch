@@ -1,5 +1,5 @@
-from interfaces.state_space_problem import StateSpaceProblem
-from data_structures.priority_queue import PriorityQueue
+from ..interfaces.state_space_problem import StateSpaceProblem
+from ..data_structures.priority_queue import PriorityQueue
 import time
 
 def branch_and_bound_search(problem: StateSpaceProblem, statistics=False):
@@ -44,7 +44,8 @@ def branch_and_bound_search(problem: StateSpaceProblem, statistics=False):
                     priority_queue.push((successor, path + [state]), new_accumulated_cost)
 
     elapsed_time = time.time() - start_time
+    full_path = best_solution
     if statistics:
-        return best_solution, {'time': elapsed_time, 'inferences': inferences, 'cost': int(best_cost)}
+        return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(best_cost)}
     else:
-        return best_solution
+        return full_path

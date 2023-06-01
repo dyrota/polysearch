@@ -1,4 +1,4 @@
-from interfaces.state_space_problem import StateSpaceProblem
+from ..interfaces.state_space_problem import StateSpaceProblem
 import time
 
 def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_restart=False, num_restarts=10, statistics=False):
@@ -21,10 +21,12 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
     def hill_climbing():
         start_time = time.time()
         current_state = problem.initial_state()
+        visited = set()
         path = [current_state]
         inferences = 0
 
         while not problem.goal_check(current_state):
+            visited.add(current_state)
             best_successor = None
             best_heuristic = float('inf')
 
@@ -46,27 +48,28 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
 
         elapsed_time = time.time() - start_time
         path_cost = sum(problem.cost(path[i], path[i + 1]) for i in range(len(path) - 1))
+        
         if statistics:
-            return path, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
+            return {'path': path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
         else:
-            return path
+            return path, None, None
 
     best_solution = None
     best_cost = float("inf")
 
     if random_restart:
         for _ in range(num_restarts):
-            solution, stats = hill_climbing()
+            solution, visited, stats = hill_climbing()
             cost = stats['cost'] if statistics else sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
             if cost < best_cost:
-                best_solution, best_cost = solution, cost
+                best_solution, best_visited, best_cost = solution, visited, cost
                 if statistics:
                     best_stats = stats
     else:
-        best_solution, best_stats = hill_climbing()
+        best_solution, best_visited, best_stats = hill_climbing()
         best_cost = best_stats['cost'] if statistics else sum(problem.cost(best_solution[i], best_solution[i + 1]) for i in range(len(best_solution) - 1))
 
     if statistics:
-        return best_solution, best_stats
+        return best_solution, best_visited, best_stats
     else:
         return best_solution

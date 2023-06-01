@@ -1,4 +1,4 @@
-from interfaces.state_space_problem import StateSpaceProblem
+from ..interfaces.state_space_problem import StateSpaceProblem
 
 class MissionariesAndCannibalsProblem(StateSpaceProblem):
     def __init__(self):
@@ -23,8 +23,8 @@ class MissionariesAndCannibalsProblem(StateSpaceProblem):
     def cost(self, state1, state2):
         return 1
 
-    def solution(self, state):
-        return state
+    # def solution(self, state):
+    #     return state
 
     def move_1m(self, state):
         missionaries, cannibals, boat_position = state
