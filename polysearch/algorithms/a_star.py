@@ -7,9 +7,9 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
     A* search algorithm.
 
     :param problem: An object representing the problem to be solved, which
-                    must inherit from the StateSpaceProblem interface.
+                    must be inherited from the StateSpaceProblem interface.
     :param heuristic: An optional heuristic function that takes a state as input
-                        and returns an estimated cost to reach the goal.
+                        and returns an estimated cost to reach the goal. Default is none.
     :param statistics: An optional function to return the 'time', 'inferences', and 'cost'. Default is false.
     :return: A tuple containing the solution.
     """

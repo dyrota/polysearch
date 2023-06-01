@@ -6,7 +6,7 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
     Iterative deepening search algorithm.
 
     :param problem: An object representing the problem to be solved, which
-                    must inherit from the StateSpaceProblem interface.
+                    must be inherited from the StateSpaceProblem interface.
     :param max_depth: The maximum depth to explore in the search tree. If None (default),
                       the algorithm will continue until a solution is found or the entire tree is explored.
     :param statistics: An optional boolean flag to return the 'time', 'inferences', and 'path_cost' along with the solution.

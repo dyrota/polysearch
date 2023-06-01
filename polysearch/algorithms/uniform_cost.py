@@ -7,7 +7,7 @@ def uniform_cost_search(problem: StateSpaceProblem, statistics=False):
     Uniform cost search algorithm.
 
     :param problem: An object representing the problem to be solved, which
-                    must inherit from the StateSpaceProblem interface.
+                    must be inherited from the StateSpaceProblem interface.
     :param statistics: An optional function to return the 'time', 'inferences', and 'cost'. Default is false.
     :return: A tuple containing the solution.
     """

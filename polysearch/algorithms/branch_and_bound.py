@@ -7,7 +7,7 @@ def branch_and_bound_search(problem: StateSpaceProblem, statistics=False):
     Branch and Bound search algorithm.
 
     :param problem: An object representing the problem to be solved, which
-                    must inherit from the StateSpaceProblem interface.
+                    must be inherited from the StateSpaceProblem interface.
     :param statistics: An optional function to return the 'time', 'inferences', and 'cost'. Default is false.
     :return: A tuple containing the solution.
     """

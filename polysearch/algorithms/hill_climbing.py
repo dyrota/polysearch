@@ -6,9 +6,9 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
     Hill climbing search algorithm.
 
     :param problem: An object representing the problem to be solved, which
-                    must inherit from the StateSpaceProblem interface.
+                    must be inherited from the StateSpaceProblem interface.
     :param heuristic: An optional heuristic function that takes a state as input
-                      and returns an estimated cost to reach the goal.
+                        and returns an estimated cost to reach the goal. Default is none.
     :param random_restart: If True, perform random restarts in case the algorithm
                            gets stuck in a local minimum. Default is False.
     :param num_restarts: The number of random restarts to perform. Default is 10.
