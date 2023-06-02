@@ -46,6 +46,6 @@ def branch_and_bound_search(problem: StateSpaceProblem, statistics=False):
     elapsed_time = time.time() - start_time
     full_path = best_solution
     if statistics:
-        return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(best_cost)}
+        return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': best_cost} # Cost can be inf
     else:
         return full_path

@@ -26,7 +26,7 @@ def uniform_cost_search(problem: StateSpaceProblem, statistics=False):
             elapsed_time = time.time() - start_time
             full_path = path + [state]
             if statistics:
-                return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
+                return {'path': full_path}, {'visited': len(visited)}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
             else:
                 return full_path
 
