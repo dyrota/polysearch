@@ -49,27 +49,26 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
         elapsed_time = time.time() - start_time
         path_cost = sum(problem.cost(path[i], path[i + 1]) for i in range(len(path) - 1))
         
-        if statistics:
-            return {'path': path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
-        else:
-            return path, None, None
+        # Always return raw values; outer function handles statistics wrapping
+        return path, visited, elapsed_time, inferences, path_cost
 
     best_solution = None
+    best_visited = None
+    best_stats_raw = None
     best_cost = float("inf")
 
     if random_restart:
         for _ in range(num_restarts):
-            solution, visited, stats = hill_climbing()
-            cost = stats['cost'] if statistics else sum(problem.cost(solution[i], solution[i + 1]) for i in range(len(solution) - 1))
+            path, vis, elapsed, inf, cost = hill_climbing()
             if cost < best_cost:
-                best_solution, best_visited, best_cost = solution, visited, cost
-                if statistics:
-                    best_stats = stats
+                best_solution, best_visited, best_cost = path, vis, cost
+                best_stats_raw = (elapsed, inf, cost)
     else:
-        best_solution, best_visited, best_stats = hill_climbing()
-        best_cost = best_stats['cost'] if statistics else sum(problem.cost(best_solution[i], best_solution[i + 1]) for i in range(len(best_solution) - 1))
+        best_solution, best_visited, elapsed, inf, best_cost = hill_climbing()
+        best_stats_raw = (elapsed, inf, best_cost)
 
     if statistics:
-        return best_solution, best_visited, best_stats
+        elapsed, inf, cost = best_stats_raw
+        return {'path': best_solution}, {'visited': best_visited}, {'time': elapsed, 'inferences': inf, 'cost': int(cost)}
     else:
         return best_solution

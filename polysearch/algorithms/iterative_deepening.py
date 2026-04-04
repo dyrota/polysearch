@@ -13,8 +13,10 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
                        Default is False.
     :return: A tuple containing the solution, total path cost of the solution, and optionally the statistics
     """
-    def depth_limited_search(state, depth, path, visited):
-        if state in visited or depth == 0:
+    def depth_limited_search(state, depth, path, path_set, visited):
+        # Cycle detection uses path_set (current branch only), not the shared visited set.
+        # visited accumulates all nodes touched across branches for statistics tracking.
+        if state in path_set:
             return None, visited
 
         visited.add(state)
@@ -22,18 +24,20 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
         if problem.goal_check(state):
             return path + [state], visited
 
-        best_solution = None
-        best_visited = visited
+        if depth == 0:
+            return None, visited
+
+        new_path = path + [state]
+        new_path_set = path_set | {state}
 
         for operator in problem.operators():
             successor_state = problem.apply_operator(operator, state)
-            if successor_state is not None and successor_state not in visited:
-                solution, visited_in_successor = depth_limited_search(successor_state, depth - 1, path + [state], visited)
+            if successor_state is not None:
+                solution, visited = depth_limited_search(successor_state, depth - 1, new_path, new_path_set, visited)
                 if solution is not None:
-                    best_solution = solution
-                    best_visited = visited_in_successor
+                    return solution, visited
 
-        return best_solution, best_visited
+        return None, visited
 
     start_time = time.time()
     inferences = 0
@@ -41,7 +45,7 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
     if max_depth is None:
         depth = 1
         while True:
-            solution, visited = depth_limited_search(problem.initial_state(), depth, [], set())
+            solution, visited = depth_limited_search(problem.initial_state(), depth, [], set(), set())
             inferences += 1
 
             if solution is not None:
@@ -54,7 +58,7 @@ def iterative_deepening_search(problem: StateSpaceProblem, max_depth=None, stati
 
             depth += 1
     else:
-        solution, visited = depth_limited_search(problem.initial_state(), max_depth, [], set())
+        solution, visited = depth_limited_search(problem.initial_state(), max_depth, [], set(), set())
         elapsed_time = time.time() - start_time
         if solution is not None:
             if statistics:
