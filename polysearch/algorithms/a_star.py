@@ -20,20 +20,19 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
     visited = set()
     priority_queue = PriorityQueue()
     initial_state = problem.initial_state()
-    priority_queue.push((initial_state, []), heuristic(initial_state))
+    priority_queue.push((initial_state, [], 0), heuristic(initial_state))
     inferences = 0
 
     while not priority_queue.is_empty():
         # _ = accumulated_cost + heuristic value
-        _, (state, path) = priority_queue.pop()
+        _, (state, path, accumulated_cost) = priority_queue.pop()
         inferences += 1
 
         if problem.goal_check(state):
             elapsed_time = time.time() - start_time
             full_path = path + [state]
-            path_cost = sum(problem.cost(full_path[i], full_path[i + 1]) for i in range(len(full_path) - 1))
             if statistics:
-                return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(path_cost)}
+                return {'path': full_path}, {'visited': visited}, {'time': elapsed_time, 'inferences': inferences, 'cost': int(accumulated_cost)}
             else:
                 return full_path
 
@@ -46,9 +45,9 @@ def a_star_search(problem: StateSpaceProblem, heuristic=None, statistics=False):
             successor = problem.apply_operator(operator, state)
             if successor is not None and successor not in visited:
                 current_cost = problem.cost(state, successor)
+                new_accumulated_cost = accumulated_cost + current_cost
                 new_heuristic_value = heuristic(successor)
-                accumulated_cost = sum(problem.cost(path[i], path[i + 1]) for i in range(len(path) - 1)) + current_cost
-                priority_queue.push((successor, path + [state]), accumulated_cost + new_heuristic_value)
+                priority_queue.push((successor, path + [state], new_accumulated_cost), new_accumulated_cost + new_heuristic_value)
 
     if statistics:
         elapsed_time = time.time() - start_time
