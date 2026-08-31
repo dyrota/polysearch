@@ -281,3 +281,118 @@ def test_iterative_deepening_depth_zero_checks_only_the_start():
     start_is_goal = MazeProblem(MAZE, START, START)
     assert iterative_deepening_search(start_is_goal, max_depth=0) == [START]
     assert iterative_deepening_search(MazeProblem(MAZE, START, GOAL), max_depth=0) is None
+
+
+# --- hill climbing: stalling is failure, and restarts must help not hurt ----
+
+class _LocalOptimumProblem(StateSpaceProblem):
+    """A 1-D landscape on 0..10 with the goal at 10 and a deep well at 3.
+
+    Climbing from 0 walks into the well and stalls there, never reaching the
+    goal. Starting anywhere at 5 or above climbs cleanly to 10. That split is
+    what makes restart behavior observable: one start fails, another succeeds.
+    """
+
+    def __init__(self, start=0, restart_states=None):
+        self._start = start
+        self._restart_states = list(restart_states or [])
+        self.random_state_calls = 0
+
+    def initial_state(self):
+        return self._start
+
+    def goal_check(self, state):
+        return state == 10
+
+    def operators(self):
+        return [lambda s: s - 1, lambda s: s + 1]
+
+    def apply_operator(self, operator, state):
+        nxt = operator(state)
+        return nxt if 0 <= nxt <= 10 else None
+
+    def cost(self, state1, state2):
+        return 1
+
+    def heuristic(self, state):
+        # The well at 3 is more attractive than the goal, so a climb that
+        # reaches it can never leave.
+        return -100 if state == 3 else abs(10 - state)
+
+    def random_state(self):
+        state = self._restart_states[self.random_state_calls % len(self._restart_states)]
+        self.random_state_calls += 1
+        return state
+
+
+def test_hill_climbing_stall_is_reported_as_failure():
+    # The climb stalls in the well at 3 and never reaches 10. Returning that
+    # partial path made a failed search look like a solved one.
+    problem = _LocalOptimumProblem()
+    assert hill_climbing_search(problem, heuristic=problem.heuristic) is None
+
+
+def test_hill_climbing_stall_with_statistics_matches_package_shape():
+    problem = _LocalOptimumProblem()
+    path_dict, visited_dict, stats = hill_climbing_search(problem, heuristic=problem.heuristic, statistics=True)
+    assert path_dict['path'] is None
+    assert stats['cost'] is None
+    assert isinstance(visited_dict['visited'], set)
+
+
+def test_hill_climbing_success_still_returns_its_path():
+    problem = _LocalOptimumProblem(start=5)
+    path = hill_climbing_search(problem, heuristic=problem.heuristic)
+    assert path is not None
+    assert path[0] == 5 and path[-1] == 10
+
+
+def test_hill_climbing_restart_prefers_a_solution_over_a_stall():
+    # Attempt 0 starts at 0, stalls in the well with a partial path of cost 3.
+    # Attempt 1 restarts at 5 and reaches the goal with cost 5. Selecting on
+    # cost alone chose the cheaper STALL, so random_restart reliably returned
+    # the worst attempt; a solution must always win.
+    problem = _LocalOptimumProblem(restart_states=[5])
+    path = hill_climbing_search(problem, heuristic=problem.heuristic, random_restart=True, num_restarts=2)
+    assert path is not None
+    assert path[-1] == 10
+
+
+def test_hill_climbing_restart_uses_random_state():
+    # Without a random_state() the restarts all began from initial_state() and
+    # re-ran the identical deterministic climb.
+    problem = _LocalOptimumProblem(restart_states=[5, 6, 7])
+    hill_climbing_search(problem, heuristic=problem.heuristic, random_restart=True, num_restarts=4)
+    # First attempt uses initial_state(), the other three ask for a start.
+    assert problem.random_state_calls == 3
+
+
+def test_hill_climbing_restart_starts_are_actually_different():
+    problem = _LocalOptimumProblem(restart_states=[5, 6, 7])
+    events = []
+    hill_climbing_search(
+        problem, heuristic=problem.heuristic, random_restart=True, num_restarts=4, on_step=events.append
+    )
+    first_expand = {}
+    for e in events:
+        if e['type'] == 'expand':
+            first_expand.setdefault(e['restart_index'], e['state'])
+    assert len(set(first_expand.values())) > 1
+
+
+def test_hill_climbing_restart_totals_cover_every_attempt():
+    problem = _LocalOptimumProblem(restart_states=[5])
+    single = hill_climbing_search(_LocalOptimumProblem(start=5), heuristic=problem.heuristic, statistics=True)
+    multi = hill_climbing_search(problem, heuristic=problem.heuristic, random_restart=True, num_restarts=2, statistics=True)
+    # Two attempts really were performed, so the reported work must exceed one.
+    assert multi[2]['inferences'] > single[2]['inferences']
+
+
+def test_hill_climbing_restart_reports_goal_reached_per_attempt():
+    problem = _LocalOptimumProblem(restart_states=[5])
+    events = []
+    hill_climbing_search(
+        problem, heuristic=problem.heuristic, random_restart=True, num_restarts=2, on_step=events.append
+    )
+    ends = [e for e in events if e['type'] == 'mark' and e['kind'] == 'restart-end']
+    assert [e['goal_reached'] for e in ends] == [False, True]
