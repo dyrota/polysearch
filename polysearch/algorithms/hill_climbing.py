@@ -1,7 +1,7 @@
 from ..interfaces.state_space_problem import StateSpaceProblem
 import time
 
-def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_restart=False, num_restarts=10, statistics=False):
+def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_restart=False, num_restarts=10, statistics=False, on_step=None):
     """
     Hill climbing search algorithm.
 
@@ -13,12 +13,16 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
                            gets stuck in a local minimum. Default is False.
     :param num_restarts: The number of random restarts to perform. Default is 10.
     :param statistics: An optional function to return the 'time' and 'inferences'. Default is false.
+    :param on_step: Optional callback invoked with a dict for each expand/generate/reject/goal/mark
+                    event, for live tracing or visualization. Default is none (no-op). Every event
+                    is stamped with 'restart_index' since hill climbing has no shared frontier and
+                    each restart attempt is otherwise indistinguishable in the trace.
     :return: A tuple containing the solution.
     """
     if heuristic is None:
         heuristic = lambda state: 0
 
-    def hill_climbing():
+    def hill_climbing(restart_index=0):
         start_time = time.time()
         current_state = problem.initial_state()
         visited = set()
@@ -27,6 +31,10 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
 
         while not problem.goal_check(current_state):
             visited.add(current_state)
+
+            if on_step:
+                on_step({'type': 'expand', 'state': current_state, 'h': heuristic(current_state), 'restart_index': restart_index})
+
             best_successor = None
             best_heuristic = float('inf')
 
@@ -34,21 +42,30 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
                 successor = problem.apply_operator(operator, current_state)
                 if successor is not None:
                     heuristic_value = heuristic(successor)
+                    if on_step:
+                        on_step({'type': 'generate', 'from_state': current_state, 'to_state': successor, 'operator_name': getattr(operator, '__name__', None), 'h': heuristic_value, 'restart_index': restart_index})
                     if heuristic_value < best_heuristic:
                         best_successor = successor
                         best_heuristic = heuristic_value
+                elif on_step:
+                    on_step({'type': 'reject', 'from_state': current_state, 'to_state': successor, 'reason': 'invalid', 'restart_index': restart_index})
 
             inferences += 1
 
             if best_successor is None or best_heuristic >= heuristic(current_state):
+                if on_step:
+                    on_step({'type': 'mark', 'kind': 'stuck', 'state': current_state, 'restart_index': restart_index})
                 break
 
             current_state = best_successor
             path.append(current_state)
 
+        if on_step and problem.goal_check(current_state):
+            on_step({'type': 'goal', 'state': current_state, 'path_length': len(path), 'restart_index': restart_index})
+
         elapsed_time = time.time() - start_time
         path_cost = sum(problem.cost(path[i], path[i + 1]) for i in range(len(path) - 1))
-        
+
         # Always return raw values; outer function handles statistics wrapping
         return path, visited, elapsed_time, inferences, path_cost
 
@@ -58,8 +75,12 @@ def hill_climbing_search(problem: StateSpaceProblem, heuristic=None, random_rest
     best_cost = float("inf")
 
     if random_restart:
-        for _ in range(num_restarts):
-            path, vis, elapsed, inf, cost = hill_climbing()
+        for i in range(num_restarts):
+            if on_step:
+                on_step({'type': 'mark', 'kind': 'restart-begin', 'restart_index': i})
+            path, vis, elapsed, inf, cost = hill_climbing(restart_index=i)
+            if on_step:
+                on_step({'type': 'mark', 'kind': 'restart-end', 'restart_index': i, 'cost': cost})
             if cost < best_cost:
                 best_solution, best_visited, best_cost = path, vis, cost
                 best_stats_raw = (elapsed, inf, cost)
