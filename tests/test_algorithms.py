@@ -208,3 +208,76 @@ def test_iterative_deepening_on_step_iteration_begin_matches_final_depth(maze):
     iteration_marks = [e for e in events if e['type'] == 'mark' and e['kind'] == 'iteration-begin']
     # The final iteration-begin's depth_limit must be enough to have found the path.
     assert iteration_marks[-1]['depth_limit'] >= len(path_dict['path']) - 1
+
+
+# --- iterative deepening: max_depth is a ceiling, not the search depth -------
+
+# An OPEN grid, deliberately: the walled MAZE fixture is constrained enough
+# that depth-limited DFS stumbles onto the optimal path anyway, so it cannot
+# distinguish a real deepening from a single deep DFS. With room to wander, the
+# difference is stark -- this grid returned a 41-step path where the optimum is
+# 15.
+OPEN_GRID = [[0] * 8 for _ in range(8)]
+
+
+def test_iterative_deepening_bounded_returns_shallowest_path():
+    # A generous max_depth must not change WHICH solution is returned: the
+    # deepening still starts at 0, so the first solution found is the
+    # shallowest one, matching the unbounded search exactly.
+    problem = MazeProblem(OPEN_GRID, (0, 0), (7, 7))
+    bounded = iterative_deepening_search(problem, max_depth=60, statistics=True)
+    unbounded = iterative_deepening_search(MazeProblem(OPEN_GRID, (0, 0), (7, 7)), statistics=True)
+    assert bounded[0]['path'] == unbounded[0]['path']
+
+
+def test_iterative_deepening_bounded_matches_bfs_optimal_length():
+    # BFS is optimal on a unit-cost graph, so iterative deepening must agree
+    # with it on path length. Previously this returned 41 against BFS's 15.
+    ids = iterative_deepening_search(MazeProblem(OPEN_GRID, (0, 0), (7, 7)), max_depth=60, statistics=True)
+    bfs = breadth_first_search(MazeProblem(OPEN_GRID, (0, 0), (7, 7)), statistics=True)
+    assert len(ids[0]['path']) == len(bfs[0]['path'])
+
+
+def test_iterative_deepening_reports_real_inference_count(maze):
+    # The bounded branch never incremented its counter, so this was always 0 --
+    # which made iterative deepening look free next to every other algorithm.
+    result = iterative_deepening_search(maze, max_depth=60, statistics=True)
+    assert result[2]['inferences'] > 0
+
+
+def test_iterative_deepening_inferences_match_expand_events(maze):
+    events = []
+    result = iterative_deepening_search(maze, max_depth=60, statistics=True, on_step=events.append)
+    expands = [e for e in events if e['type'] == 'expand']
+    assert result[2]['inferences'] == len(expands)
+
+
+def test_iterative_deepening_iterates_through_every_depth(maze):
+    events = []
+    iterative_deepening_search(maze, max_depth=60, statistics=True, on_step=events.append)
+    depths = [e['depth_limit'] for e in events if e['type'] == 'mark' and e['kind'] == 'iteration-begin']
+    # Consecutive from 0, i.e. it actually deepens rather than jumping to the cap.
+    assert depths == list(range(len(depths)))
+
+
+def test_iterative_deepening_unreachable_depth_returns_standard_shape(maze):
+    # Too shallow to reach the goal. Previously a bare None even with
+    # statistics=True, unlike every other algorithm in the package.
+    result = iterative_deepening_search(maze, max_depth=2, statistics=True)
+    assert result is not None
+    path_dict, visited_dict, stats = result
+    assert path_dict['path'] is None
+    assert isinstance(visited_dict['visited'], set)
+    assert stats['inferences'] > 0
+
+
+def test_iterative_deepening_unreachable_depth_without_statistics(maze):
+    assert iterative_deepening_search(maze, max_depth=2) is None
+
+
+def test_iterative_deepening_depth_zero_checks_only_the_start():
+    # A limit of 0 means "expand the root and stop", so it finds a solution
+    # only when the start state is already a goal.
+    start_is_goal = MazeProblem(MAZE, START, START)
+    assert iterative_deepening_search(start_is_goal, max_depth=0) == [START]
+    assert iterative_deepening_search(MazeProblem(MAZE, START, GOAL), max_depth=0) is None
